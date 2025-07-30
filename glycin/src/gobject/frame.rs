@@ -7,6 +7,26 @@ use crate::Frame;
 
 static_assertions::assert_impl_all!(GlyFrame: Send, Sync);
 
+#[derive(Debug, Copy, Clone)]
+#[cfg_attr(feature = "gobject", derive(gio::glib::Enum))]
+#[cfg_attr(feature = "gobject", enum_type(name = "GlyColorMode"))]
+#[repr(i32)]
+#[non_exhaustive]
+pub enum GlyColorMode {
+    Srgb,
+    Cicp,
+}
+
+#[derive(Clone, Debug, glib::Boxed)]
+#[boxed_type(name = "GlyCicp", nullable)]
+#[repr(C)]
+pub struct GlyCicp {
+    pub color_primaries: u8,
+    pub transfer_function: u8,
+    pub matrix_coefficients: u8,
+    pub range: u8,
+}
+
 pub mod imp {
     use super::*;
 
@@ -38,5 +58,20 @@ impl GlyFrame {
 
     pub fn frame(&self) -> &Frame {
         self.imp().frame.get().unwrap()
+    }
+
+    pub fn color_mode(&self) -> GlyColorMode {
+        match self.frame().color_state() {
+            crate::ColorState::Srgb => GlyColorMode::Srgb,
+            crate::ColorState::Cicp(_) => GlyColorMode::Cicp,
+        }
+    }
+
+    pub fn color_cicp(&self) -> Option<gufo_common::cicp::Cicp> {
+        if let crate::ColorState::Cicp(cicp) = self.frame().color_state() {
+            Some(*cicp)
+        } else {
+            None
+        }
     }
 }

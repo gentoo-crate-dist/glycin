@@ -2,8 +2,7 @@ use gio::prelude::*;
 use glib::ffi::GType;
 use glib::subclass::prelude::*;
 use glib::translate::*;
-use glycin::gobject;
-pub use glycin::MemoryFormat as GlyMemoryFormat;
+use glycin::gobject::{self, GlyCicp};
 
 pub type GlyFrame = <gobject::frame::imp::GlyFrame as ObjectSubclass>::Instance;
 
@@ -49,20 +48,21 @@ pub unsafe extern "C" fn gly_frame_get_memory_format(frame: *mut GlyFrame) -> i3
 }
 
 #[no_mangle]
-pub extern "C" fn gly_memory_format_get_type() -> GType {
-    <GlyMemoryFormat as StaticType>::static_type().into_glib()
+pub unsafe extern "C" fn gly_frame_get_color_cicp(frame: *mut GlyFrame) -> *const GlyCicp {
+    let frame = gobject::GlyFrame::from_glib_ptr_borrow(&frame);
+    match frame.color_cicp() {
+        Some(cicp) => gobject::GlyCicp {
+            color_primaries: cicp.color_primaries.into(),
+            transfer_function: cicp.transfer_characteristics.into(),
+            matrix_coefficients: cicp.matrix_coefficients.into(),
+            range: cicp.video_full_range_flag.into(),
+        }
+        .into_glib_ptr(),
+        None => std::ptr::null(),
+    }
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gly_memory_format_has_alpha(memory_format: i32) -> glib::ffi::gboolean {
-    let format = glycin::MemoryFormat::try_from(memory_format).unwrap();
-    format.has_alpha().into_glib()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gly_memory_format_is_premultiplied(
-    memory_format: i32,
-) -> glib::ffi::gboolean {
-    let format = glycin::MemoryFormat::try_from(memory_format).unwrap();
-    format.is_premultiplied().into_glib()
+pub extern "C" fn gly_cicp_get_type() -> GType {
+    <GlyCicp as StaticType>::static_type().into_glib()
 }

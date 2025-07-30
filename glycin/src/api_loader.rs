@@ -276,18 +276,8 @@ impl Image {
     /// File the image was loaded from
     ///
     /// Is `None` if the file was loaded from a stream or binary data.
-    pub fn loader_file(&self) -> Option<gio::File> {
+    pub fn file(&self) -> Option<gio::File> {
         self.loader.source.file()
-    }
-
-    /// File the image was loaded from
-    #[deprecated]
-    pub fn file(&self) -> gio::File {
-        if let Source::File(file) = &self.loader.source {
-            file.clone()
-        } else {
-            gio::File::for_uri("invalid:")
-        }
     }
 
     /// [`Cancellable`](gio::Cancellable) to cancel operations within this image
@@ -473,8 +463,8 @@ impl FrameDetails {
         self.inner.color_cicp.as_ref().map(|x| x.as_slice())
     }
 
-    pub fn color_iccp(&self) -> Option<BinaryData> {
-        self.inner.color_iccp.clone()
+    pub fn color_icc_profile(&self) -> Option<BinaryData> {
+        self.inner.color_icc_profile.clone()
     }
 
     pub fn info_alpha_channel(&self) -> Option<bool> {
