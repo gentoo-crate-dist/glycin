@@ -592,6 +592,12 @@ impl SystemSetup {
                         self.lib_symlinks.push((path, target));
                     }
                 }
+            } else if last_segment.as_encoded_bytes() == b"nix" {
+                // Add /nix/store on systems with Nix
+                //
+                // This also implies access to non-library data in the nix store,
+                // but everything there is read-only and non-confidential anyway.
+                self.lib_dirs.push(entry.path().join("store"));
             }
         };
 
