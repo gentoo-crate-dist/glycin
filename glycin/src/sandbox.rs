@@ -258,7 +258,7 @@ impl Sandbox {
         }
 
         // Inherit some environment variables
-        for env_key in ["RUST_BACKTRACE", "RUST_LOG"] {
+        for env_key in ["RUST_BACKTRACE", "RUST_LOG", "PATH"] {
             if let Some(val) = std::env::var_os(env_key) {
                 if matches!(self.sandbox_mechanism, SandboxMechanism::FlatpakSpawn) {
                     let mut arg = OsString::new();
