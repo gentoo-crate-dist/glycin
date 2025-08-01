@@ -459,8 +459,10 @@ impl FrameDetails {
         Self { inner }
     }
 
-    pub fn color_cicp(&self) -> Option<&[u8]> {
-        self.inner.color_cicp.as_ref().map(|x| x.as_slice())
+    pub fn color_cicp(&self) -> Option<crate::Cicp> {
+        self.inner
+            .color_cicp
+            .and_then(|x| crate::Cicp::from_bytes(&x).ok())
     }
 
     pub fn color_icc_profile(&self) -> Option<BinaryData> {
