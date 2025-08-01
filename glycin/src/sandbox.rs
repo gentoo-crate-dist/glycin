@@ -258,7 +258,7 @@ impl Sandbox {
         }
 
         // Inherit some environment variables
-        for env_key in ["RUST_BACKTRACE", "RUST_LOG"] {
+        for env_key in ["RUST_BACKTRACE", "RUST_LOG", "PATH"] {
             if let Some(val) = std::env::var_os(env_key) {
                 if matches!(self.sandbox_mechanism, SandboxMechanism::FlatpakSpawn) {
                     let mut arg = OsString::new();
@@ -592,6 +592,12 @@ impl SystemSetup {
                         self.lib_symlinks.push((path, target));
                     }
                 }
+            } else if last_segment.as_encoded_bytes() == b"nix" {
+                // Add /nix/store on systems with Nix
+                //
+                // This also implies access to non-library data in the nix store,
+                // but everything there is read-only and non-confidential anyway.
+                self.lib_dirs.push(entry.path().join("store"));
             }
         };
 
