@@ -21,16 +21,21 @@ resolver = "2"
 members = [
     "glycin",
     "glycin-common",
-    "glycin-tools",
+    "glycin-dev-tools",
+    "glycin-loaders/*",
+    "glycin-thumbnailer",
     "glycin-utils",
     "libglycin",
     "libglycin/libglycin-gtk4",
-    "loaders/*",
     "tests",
-    "thumbnailer",
-    "tools",
 ]
-default-members = ["glycin", "glycin-common", "glycin-utils", "glycin-tools"]
+default-members = [
+    "glycin",
+    "glycin-common",
+    "glycin-dev-tools",
+    "glycin-thumbnailer",
+    "glycin-utils",
+]
 
 [workspace.lints.clippy]
 arithmetic_side_effects = "forbid"
