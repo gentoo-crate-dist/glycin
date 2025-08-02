@@ -13,4 +13,4 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.ssh_key }}
           upstream-repo: https://gitlab.gnome.org/GNOME/glycin.git
-          directories: glycin glycin-utils/ loaders/*/ tests tools
+          directories: glycin
